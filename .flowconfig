@@ -1,0 +1,12 @@
+[ignore]
+.*/node_modules/babel.*
+.*/example/.*
+
+[include]
+
+[libs]
+
+[options]
+suppress_type=$FlowIgnore
+
+suppress_comment=\\(.\\|\n\\)*\\$FlowIgnore

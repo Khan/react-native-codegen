@@ -1,0 +1,19 @@
+entries:
+  KitchenSink:
+    source: "./example/index.js"
+    dest: "./example/swift/"
+  Settings:
+    source: "./example/Settings.js"
+    dest: "./example/swift/"
+
+types:
+  "./example/index.js":
+    Video:
+      swift: Video
+      java: com.example.core.models.Video
+    VideoDescription:
+      swift: VideoDescription
+      java: com.example.core.models.VideoDescription
+    User:
+      swift: User
+      java: com.example.core.models.User
