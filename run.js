@@ -14,7 +14,7 @@ import path from "path";
 import fs from "fs";
 
 import getFlowTypes from "./src/flow";
-import generateSwiftFiles from "./src/swift";
+import generateSwift from "./src/swift";
 import generateJSWrapper from "./src/js";
 
 import type {Config} from "./src/types";
@@ -53,12 +53,12 @@ Object.keys(config.entries).forEach(name => {
             delete configTypes[name];
         });
     }
-    const files = generateSwiftFiles(name, sourcePath, modules, configTypes);
-    Object.keys(files).map(filename => {
-        const dest = path.join(path.join(baseDir, entry.dest), filename);
-        mkdirp.sync(path.dirname(dest));
-        fs.writeFileSync(dest, files[filename], "utf8");
-    });
+
+    const swiftClass = generateSwift(name, sourcePath, modules, configTypes);
+    const dest = path.join(path.join(baseDir, entry.dest), name + ".swift");
+    mkdirp.sync(path.dirname(dest));
+    fs.writeFileSync(dest, swiftClass, "utf8");
+
     const jsWrapperPath = path.join(path.dirname(sourcePath),
                                     name + "Wrapper.js");
     const jsWrapper = generateJSWrapper(
