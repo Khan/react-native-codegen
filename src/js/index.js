@@ -1,0 +1,204 @@
+/**
+ * Generates the javascript-side component wrapper
+ *
+ * @flow
+ */
+
+import path from "path";
+import {indentedLines} from "../swift/utils";
+
+import type {
+    Modules,
+    Annotation,
+    ConfigTypes,
+    TypeRefAnnotation,
+} from "../types";
+
+type UsedTypes = {
+    [path: string]: {
+        [name: string]: true
+    }
+}
+
+const asJsonType = (
+    annotation: Annotation
+): string => {
+    switch (annotation.type) {
+        case "void":
+            return "void";
+        case "base":
+            return annotation.name;
+        case "type-ref":
+            return annotation.name;
+        case "optional":
+            return "?" + asJsonType(annotation.inner);
+        case "function":
+            return "number";
+    }
+    throw new Error(`Unable to create annotation for ${annotation}`);
+}
+
+const asJsType = (
+    annotation: Annotation,
+    modules: Modules,
+    config: ConfigTypes,
+    usedTypes: UsedTypes
+): string => {
+    switch (annotation.type) {
+        case "void":
+            return "void";
+        case "base":
+            return annotation.name;
+        case "type-ref":
+            if (!usedTypes[annotation.path]) {
+                usedTypes[annotation.path] = {};
+            }
+            usedTypes[annotation.path][annotation.name] = true;
+            return annotation.name;
+        case "optional":
+            return "?" + asJsType(annotation.inner, modules, config, usedTypes);
+        case "function":
+            const args = annotation.params.map(
+                param => param.name + ': ' + asJsType(param.ann,
+                                                      modules,
+                                                      config,
+                                                      usedTypes)
+            ).join(", ");
+            const returnType = asJsType(annotation.returnType, modules, config, usedTypes);
+            return `(${args}) => ${returnType}`;
+    }
+    throw new Error(`Unable to make js annotation for ${annotation}`);
+}
+
+
+const jsToJson = (
+    argname: string,
+    annotation: Annotation,
+    modules: Modules,
+    config: ConfigTypes,
+    usedTypes: UsedTypes
+): string => {
+    switch (annotation.type) {
+        case "base":
+        case "optional":
+        case "type-ref":
+            return argname
+        case "function":
+            const args = annotation.params.map(param => param.name).join(', ');
+            const argList = annotation.params.map(param => {
+                const jsValue = jsonToJS(
+                    param.name, param.ann, modules, config, usedTypes);
+                return `${param.name}: ${jsValue}`
+            }).join(', ');
+            return `this.registerCallback(({${args}}) => {
+    ${argname}(${argList});
+})`
+    }
+    throw new Error(`Unable to convert ${annotation}`);
+}
+
+
+const jsonToJS = (
+    argname: string,
+    annotation: Annotation,
+    modules: Modules,
+    config: ConfigTypes,
+    usedTypes: UsedTypes
+): string => {
+    switch (annotation.type) {
+        case "base":
+        case "type-ref":
+        case "optional":
+            return argname
+        case "function":
+            const args = annotation.params.map(param => {
+                const jsType = asJsType(param.ann, modules, config, usedTypes);
+                return `${param.name}: ${jsType}`
+            }).join(', ');
+            const argObject = annotation.params.map(param => {
+                const jsonValue = indentedLines([
+                    jsToJson(param.name, param.ann, modules, config, usedTypes)], "\n", 2);
+                return `${param.name}: ${jsonValue}`;
+            }).join(', ');
+            return `\
+(${args}) => {
+    ReactNativeCallbackManager.callNative(${argname}, {${argObject}});
+}`
+    }
+    throw new Error(`Unable to convert type ${annotation}`);
+}
+
+
+export default (
+    className: string,
+    filePath: string,
+    modules: Modules,
+    config: ConfigTypes,
+): string => {
+    const baseName = path.basename(filePath);
+    const props = modules[filePath].Props;
+    if (props.type !== "object") {
+        throw new Error("Expected Props to be an object");
+    }
+
+    const usedTypes = {};
+
+    const propAssignments = indentedLines(props.keys.map(key => {
+        const fromJson = jsonToJS(
+            'this.props.' + key, props.attrs[key], modules, config, usedTypes);
+        return `${key}={${fromJson}}`;
+    }), '\n', 8);
+
+    const typeImports = Object.keys(usedTypes).map(sourcePath => {
+        const types = Object.keys(usedTypes[sourcePath]).join(', ');
+        const relPath = path.relative(path.dirname(filePath), sourcePath);
+        return `import type {${types}} from "./${relPath}";`
+    }).join('\n');
+
+    const propsType = "{\n    " + indentedLines(props.keys.map(key => {
+        const jsonType = asJsonType(props.attrs[key], modules, config, null);
+        return `${key}: ${jsonType}`;
+    }), "\n", 2) + "\n}";
+
+    return `/**
+ * This class was AUTO-GENERATED by react-native-codegen, and should not be
+ * edited manually. If there is an error, make a change to
+ * react-native-codegen. If you want to add another attribute, change the
+ * \`Props\` declaration in "${filePath}".
+ */
+
+import React from "react-native";
+import {ReactNativeCallbackManager} from "react-native-codegen";
+
+import WrappedComponent from "./${baseName}";
+
+${typeImports}
+
+type Props = ${propsType}
+
+class ${className}Wrapper extends React.Component {
+    props: Props;
+
+    constructor(props) {
+        super(props);
+        this.callbackIds = [];
+    }
+    registerCallback(cb: Function) {
+        const id = ReactNativeCallbackManager.registerCallback(cb);
+        this.callbackIds.push(id);
+        return id;
+    }
+    componentWillUnmount() {
+        ReactNativeCallbackManager.unregisterCallbacks(this.callbackIds);
+    }
+    render() {
+        return (
+            <WrappedComponent
+                ${propAssignments}
+            />
+        );
+    }
+}
+
+export default ${className}Wrapper`
+}
