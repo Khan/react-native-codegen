@@ -16,6 +16,26 @@ not yet supported.
 
 Java support has not yet begun.
 
+## Requirements
+
+- nodejs (5 is probably safest, but probably others work too)
+- [flow](http://flowtype.org) (`brew install flow`)
+
+## Installation
+(probably, not solidified)
+Once you've installed react-native via npm, just also install
+`react-native-codegen`. Then to run the codegen, you can add a scripts entry
+to your package.json:
+
+```
+"scripts": {
+  "codegen": "react-native-codegen ./codegen.yaml"
+}
+```
+
+or something like that. Then if you run `npm run codegen` your files will be
+generated for you.
+
 ## Usage
 
 ReactNativeCodeGen uses a configuration file, typically called `codegen.yaml`.
@@ -47,10 +67,8 @@ types:
 
 ## Developing
 
-You will need flow installed (`brew install flow`) and nodejs.
-
 Run `npm install` and then `npm run example` to generate the example bridge
-files, defined in `./codegen.yaml`.
+files, defined in `./example/codegen.yaml`.
 
 ## TODO
 

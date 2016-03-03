@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "example": "babel-node run.js"
+    "example": "babel-node run.js ./example/codegen.yaml",
+    "test": "mocha -R spec --compilers js:babel-register tests/*-test.js tests/**/*-test.js"
   },
   "dependencies": {
     "js-yaml": "^3.5.3",
@@ -11,6 +12,9 @@
     "babel-eslint": "^5.0.0",
     "babel-preset-es2015": "^6.6.0",
     "babel-preset-react": "^6.5.0",
-    "babel-preset-stage-0": "^6.5.0"
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-register": "^6.6.0",
+    "expect": "^1.14.0",
+    "mocha": "^2.4.5"
   }
 }
