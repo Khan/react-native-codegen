@@ -11,19 +11,19 @@ import React, {
     // $FlowIgnore
 } from 'react-native';
 
-type VideoDescription = {
+export type VideoDescription = {
     lastEdited: number,
     author: string,
     text: string,
 };
 
-type Video = {
+export type Video = {
     uri: string,
     length: number,
     description: VideoDescription,
 };
 
-type User = {
+export type User = {
     id: number,
     name: string,
     isAdmin: boolean,
