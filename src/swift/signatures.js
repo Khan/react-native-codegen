@@ -9,7 +9,13 @@
 
 import type {Annotation, Modules, ConfigTypes} from "../types";
 
-const SWIFT_BASES = {"string": "String", "number": "Int", "boolean": "Bool"};
+const BASE_SWIFT_TYPE_NAME_MAPPING = {
+    string: "String",
+    // TODO(jared): use comments to distinguish between Floats and Ints (default
+    // to integer, have a comment like `// codegen: float` for floats)
+    number: "Int",
+    boolean: "Bool",
+};
 
 export const asSwiftTypeSignature = (
     annotation: Annotation,
@@ -19,7 +25,7 @@ export const asSwiftTypeSignature = (
         case "type-ref":
             return config[annotation.path][annotation.name].swift;
         case "base":
-            return SWIFT_BASES[annotation.name];
+            return BASE_SWIFT_TYPE_NAME_MAPPING[annotation.name];
         case "void":
             return "Void";
         case "function":
@@ -44,7 +50,7 @@ export const asJsonTypeSignature = (
 ): string => {
     switch (annotation.type) {
         case "base":
-            return SWIFT_BASES[annotation.name];
+            return BASE_SWIFT_TYPE_NAME_MAPPING[annotation.name];
         case "object":
             return "[String: AnyObject]";
         case "function":
