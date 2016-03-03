@@ -1,11 +1,13 @@
 {
   "name": "react-native-codegen",
   "version": "0.0.1",
-  "main": "./index.js",
+  "main": "./built-lib/index.js",
   "scripts": {
     "example": "babel-node run.js ./example/codegen.yaml",
-    "test": "mocha -R spec --compilers js:babel-register tests/*-test.js tests/**/*-test.js"
+    "test": "mocha -R spec --compilers js:babel-register tests/*-test.js tests/**/*-test.js",
+    "build": "babel lib -d built-lib"
   },
+  "bin": "./wrapper.js",
   "dependencies": {
     "js-yaml": "^3.5.3",
     "mkdirp": "^0.5.1"
