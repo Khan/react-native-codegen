@@ -144,6 +144,7 @@ const processPath = (file: string, modules: Modules) => {
                 const name = (spec.name || spec.id).name;
                 modules[file][name] = {
                     type: "type-ref",
+                    params: [],
                     path: subpath,
                     name: spec.id.name,
                 };
