@@ -42,7 +42,7 @@ export default (
             key, props.attrs[key], marshallingMethods, modules, config
         )]);
         const capName = capitalize(key);
-        return `public func set${capName}(${key}: ${swiftType}) {
+        return `private func set${capName}(${key}: ${swiftType}) {
   serialized["${key}"] = ${toJson}
 }`;
     }), "\n\n");
