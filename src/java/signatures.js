@@ -55,8 +55,6 @@ export const asJavaTypeSignature = (
             return `Fn${annotation.params.length}args<${params}>`;
         case "optional":
             return "Optional<" + asJavaTypeSignature(annotation.inner, true, config) + ">";
-        case "object":
-            return "???OBJECT";
     }
     throw new Error(`Unable to convert ${JSON.stringify(annotation)} to java signature`);
 };
