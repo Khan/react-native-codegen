@@ -20,15 +20,15 @@ public class KitchenSink {
         setOnError(onError)
     }
 
-    public func setUser(user: User) {
+    private func setUser(user: User) {
     serialized["user"] = self.serializeUser(user)
   }
 
-  public func setCurrentVideo(currentVideo: Video) {
+  private func setCurrentVideo(currentVideo: Video) {
     serialized["currentVideo"] = self.serializeVideo(currentVideo)
   }
 
-  public func setSetVideo(setVideo: (video: Video, count: Int) -> Void) {
+  private func setSetVideo(setVideo: (video: Video, count: Int) -> Void) {
     serialized["setVideo"] = registerCallback({args in
       let video: Video = self.deserializeVideo(args["video"]! as! [String: AnyObject])
       let count: Int = args["count"]! as! Int
@@ -36,7 +36,7 @@ public class KitchenSink {
     })
   }
 
-  public func setGetNextVideo(getNextVideo: (cb: (video: Video) -> Void) -> Void) {
+  private func setGetNextVideo(getNextVideo: (cb: (video: Video) -> Void) -> Void) {
     serialized["getNextVideo"] = registerCallback({args in
       let cb: (video: Video) -> Void = {(video: Video) in
         let video_json: [String: AnyObject] = self.serializeVideo(video)
@@ -46,7 +46,7 @@ public class KitchenSink {
     })
   }
 
-  public func setGetVideoForUser(getVideoForUser: (user: User, cb: (video: Video) -> Void) -> Void) {
+  private func setGetVideoForUser(getVideoForUser: (user: User, cb: (video: Video) -> Void) -> Void) {
     serialized["getVideoForUser"] = registerCallback({args in
       let user: User = self.deserializeUser(args["user"]! as! [String: AnyObject])
       let cb: (video: Video) -> Void = {(video: Video) in
@@ -57,13 +57,13 @@ public class KitchenSink {
     })
   }
 
-  public func setOnClose(onClose: () -> Void) {
+  private func setOnClose(onClose: () -> Void) {
     serialized["onClose"] = registerCallback({args in
       onClose()
     })
   }
 
-  public func setOnError(onError: (message: String) -> Void) {
+  private func setOnError(onError: (message: String) -> Void) {
     serialized["onError"] = registerCallback({args in
       let message: String = args["message"]! as! String
       onError(message: message)

@@ -22,7 +22,7 @@ export default (
     filePath: string,
     modules: Modules,
     config: ConfigTypes
-): {[filename: string]: string} => {
+): string => {
     const props = modules[filePath].Props;
     if (props.type !== "object") {
         throw new Error("Expected Props to be an object");

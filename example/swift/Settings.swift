@@ -20,19 +20,19 @@ public class Settings {
         setOnSetDownloadOverWifi(onSetDownloadOverWifi)
     }
 
-    public func setShouldShowLogOutButton(shouldShowLogOutButton: Bool) {
+    private func setShouldShowLogOutButton(shouldShowLogOutButton: Bool) {
     serialized["shouldShowLogOutButton"] = shouldShowLogOutButton
   }
 
-  public func setAvailableDiskSpaceInBytes(availableDiskSpaceInBytes: Int) {
+  private func setAvailableDiskSpaceInBytes(availableDiskSpaceInBytes: Int) {
     serialized["availableDiskSpaceInBytes"] = availableDiskSpaceInBytes
   }
 
-  public func setOnlyDownloadOverWifi(onlyDownloadOverWifi: Bool) {
+  private func setOnlyDownloadOverWifi(onlyDownloadOverWifi: Bool) {
     serialized["onlyDownloadOverWifi"] = onlyDownloadOverWifi
   }
 
-  public func setCheckAnswer(checkAnswer: (answer: String, cb: (isCorrect: Bool) -> Void) -> Void) {
+  private func setCheckAnswer(checkAnswer: (answer: String, cb: (isCorrect: Bool) -> Void) -> Void) {
     serialized["checkAnswer"] = registerCallback({args in
       let answer: String = args["answer"]! as! String
       let cb: (isCorrect: Bool) -> Void = {(isCorrect: Bool) in
@@ -43,19 +43,19 @@ public class Settings {
     })
   }
 
-  public func setOnSignOut(onSignOut: () -> Void) {
+  private func setOnSignOut(onSignOut: () -> Void) {
     serialized["onSignOut"] = registerCallback({args in
       onSignOut()
     })
   }
 
-  public func setOnFeedbackNav(onFeedbackNav: () -> Void) {
+  private func setOnFeedbackNav(onFeedbackNav: () -> Void) {
     serialized["onFeedbackNav"] = registerCallback({args in
       onFeedbackNav()
     })
   }
 
-  public func setOnSetDownloadOverWifi(onSetDownloadOverWifi: (downloadOverWifi: Bool) -> Void) {
+  private func setOnSetDownloadOverWifi(onSetDownloadOverWifi: (downloadOverWifi: Bool) -> Void) {
     serialized["onSetDownloadOverWifi"] = registerCallback({args in
       let downloadOverWifi: Bool = args["downloadOverWifi"]! as! Bool
       onSetDownloadOverWifi(downloadOverWifi: downloadOverWifi)
