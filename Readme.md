@@ -77,5 +77,5 @@ Swift
 - sum types
 
 Java
-- everything
-
+- Array<> types
+- enum types
