@@ -12,6 +12,9 @@ should be shown.
 
 ## The Data
 
+These models are already defined in the codebase, and we'll be passing in
+bookmarks as data to the new react native view.
+
 ```swift
 struct Bookmark {
   let contentId: String;
@@ -61,6 +64,7 @@ export default class BookmarksPage extends React.Component {
   render() {
     return <View>
       <View style={styles.topBar}>
+        <Text style={styles.title}>Bookmarks</Text>
         <Toggle
           label="Show only downloaded"
           value={this.props.showOnlyDownloaded}
@@ -82,7 +86,9 @@ export default class BookmarksPage extends React.Component {
 
 ## The Configuration
 
-You edit the `./codegen.yaml` config file in the `mobile-shared-views` repo:
+You edit the `./codegen.yaml` config file in the `mobile-shared-views` repo,
+to specify what java & swift types correspond to the types you're using in the
+`BookmarksView`.
 
 ```yaml
 types:
@@ -92,8 +98,15 @@ types:
       java: org.khanacademy.models.Bookmark
 ```
 
-and you add an entry to `./index.ios.js` and `./index.android.js` (this
-referenced wrapper file will be generated).
+Then run `npm run generate` in the `mobile-shared-views` repo, and three files
+are generated for you:
+
+- `./views/BookmarksPageWrapper.js`
+- `./swift/BookmarksPage.swift`
+- `./java/BookmarksPage.java`
+
+Finally, add an entry to `./index.ios.js` and `./index.android.js` referencing
+the newly-generated javascript wrapper.
 
 ```js
 import BookmarksPageWrapper from "./views/BookmarksPageWrapper";
@@ -101,14 +114,7 @@ import BookmarksPageWrapper from "./views/BookmarksPageWrapper";
 AppRegistry.registerComponent('BookmarksPage', () => BookmarksPageWrapper);
 ```
 
-then run `npm run generate` in the mobile-shared-views repo, and three files
-are generated for you:
-
-- ./views/BookmarksPageWrapper.js
-- ./swift/BookmarksPage.swift
-- ./java/BookmarksPage.java
-
-## Using the view in the app
+## Using the view in the apps
 
 In the 2 apps, `mobile-shared-views` is setup as a submodule, linked into the
 right place so that the generated swift and java classes are usable in normal
@@ -133,7 +139,7 @@ public class BookmarksViewController: UIViewController {
       setShowOnlyDownloaded: { showOnlyDownloaded in
         // actually change the setting somewhere
         self.handleShowOnlyDownloaded(showOnlyDownloaded)
-        // update the state
+        // update the react native view
         self.reactNativeView.showOnlyDownloaded = showOnlyDownloaded
       },
       onNavigateToBookmark: { bookmark in
@@ -160,7 +166,7 @@ public class BookmarksViewController extends ViewController {
       (showOnlyDownloaded) -> {
         // actually change the setting somewhere
         this.handleShowOnlyDownloaded(showOnlyDownloaded);
-        // update the state
+        // update the react native view
         this.reactNativeView.setShowOnlyDownloaded(showOnlyDownloaded);
       },
       (bookmark) -> {
@@ -174,6 +180,7 @@ public class BookmarksViewController extends ViewController {
 
 # What's required for this to be a reality?
 
+- make a `mobile-shared-views` repo, hook it up
 - work out the details of java & swift packaging for react-native and the
   supporting react-native-codegen files
 - make the generated swift class a `UIView(Controller?)` and the generated
