@@ -105,7 +105,7 @@ are generated for you:
 - `./swift/BookmarksPage.swift`
 - `./java/BookmarksPage.java`
 
-Finally, add an entry to `./index.ios.js` and `./index.android.js` referencing
+Finally, add an entry to `mobile-shared-views/index.js` referencing
 the newly-generated javascript wrapper.
 
 ```js
@@ -177,6 +177,17 @@ public class BookmarksViewController extends ViewController {
   }
 }
 ```
+
+## What happens if the code has a type error?
+
+If you construct a native view with incorrect types, **you will get build-time
+type errors.**
+
+If your native type definitions are out of sync with the javascript type
+definitions, **you will get build-time type errors.**
+
+If you construct a javascript view with incorrect types, **you will get
+build-time type errors.**
 
 # What's required for this to be a reality?
 
